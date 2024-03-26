@@ -35,7 +35,7 @@ jobs:
         run: |
           TASK_DEF=$(aws ecs describe-task-definition --task-definition nginx-td-default --query 'taskDefinition' --output json)
           NEW_TASK_DEF=$(echo $TASK_DEF | jq --arg IMAGE "${{secrets.DOCKER_USERNAME}}/testing:nginx-${{ github.sha }}" '.containerDefinitions[0].image = $IMAGE')
-          FINAL_TASK_DEF=$(echo $NEW_TASK_DEF | jq '{family: .family, volumes: .volumes, containerDefinitions: .containerDefinitions}')
+          FINAL_TASK_DEF=$(echo $NEW_TASK_DEF | jq '{family: .family, volumes: .volumes, containerDefinitions: .containerDefinitions, taskRoleArn: .taskRoleArn, executionRoleArn: .executionRoleArn, networkMode: .networkMode, cpu: .cpu, memory: .memory}')
           aws ecs register-task-definition --cli-input-json "$FINAL_TASK_DEF"
     
       - name: Update ECS service
